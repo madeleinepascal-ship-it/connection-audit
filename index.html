@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connection Audit — Madeleine Di Gangi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#080807; --fg:#f0ece4; --muted:#5a5650; --dim:#2a2825; --line:#141210;
+    --work:#E8C547; --personal:#E87D47; --school:#47C5E8; --community:#8CE847;
+    --romance:#E84787; --online:#C547E8; --unclear:#4a4845; --intl:#47E8B4;
+    --na:#8a7a60; --audience:#E87D47; --reciprocal:#47C5E8; --asymknown:#8CE847;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#080807;background:var(--bg);color:#f0ece4;color:var(--fg);font-family:'DM Mono',monospace;overflow-x:hidden}
+
+header{padding:50px 50px 34px;border-bottom:1px solid var(–line);display:grid;grid-template-columns:1fr auto;align-items:end;gap:36px}
+h1{font-family:‘DM Serif Display’,serif;font-size:clamp(2.5rem,5vw,4.8rem);line-height:.92;letter-spacing:-.02em}
+h1 em{font-style:italic;color:var(–work)}
+.subhed{margin-top:14px;font-size:.62rem;color:var(–muted);letter-spacing:.1em;text-transform:uppercase;line-height:2}
+.hstat{text-align:right}
+.hstat .n{font-family:‘DM Serif Display’,serif;font-size:clamp(2.8rem,6vw,5.5rem);line-height:1}
+.hstat .l{font-size:.56rem;color:var(–muted);letter-spacing:.12em;text-transform:uppercase;display:block;margin-top:4px}
+
+nav{display:flex;border-bottom:1px solid var(–line);overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:none;border-right:1px solid var(–line);color:#5a5650;color:var(–muted);font-family:‘DM Mono’,monospace;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;padding:14px 20px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+nav button:hover{color:var(–fg);background:var(–line)}
+nav button.active{color:var(–fg);background:var(–line);border-bottom:2px solid var(–work);margin-bottom:-1px}
+
+.view{display:none;padding:50px;animation:fi .25s ease;background:#080807;background:var(–bg)}
+.view.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.sec{font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:#5a5650;color:var(–muted);margin-bottom:26px;padding-bottom:11px;border-bottom:1px solid var(–line)}
+
+/* stat grid */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(–line);margin-bottom:50px}
+@media(max-width:800px){.sg{grid-template-columns:1fr 1fr}}
+.sc{background:#080807;background:var(–bg);padding:30px;position:relative;overflow:hidden}
+.sc::before{content:’’;position:absolute;top:0;left:0;width:3px;height:100%;background:var(–a,var(–work))}
+.sc .l{font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(–muted);margin-bottom:7px}
+.sc .v{font-family:‘DM Serif Display’,serif;font-size:clamp(1.7rem,3.2vw,3rem);line-height:1}
+.sc .s{font-size:.59rem;color:var(–muted);margin-top:6px;line-height:1.7}
+
+/* PLATFORM VIEW */
+.plat-hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(–line);margin-bottom:2px}
+.plat-type{background:#080807;background:var(–bg);padding:36px}
+.plat-type .pt-label{font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(–muted);margin-bottom:12px}
+.plat-type .pt-count{font-family:‘DM Serif Display’,serif;font-size:clamp(2rem,4vw,3.8rem);line-height:1}
+.plat-type .pt-desc{font-size:.62rem;color:var(–muted);margin-top:10px;line-height:1.8}
+
+.plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px;background:var(–line)}
+.plat-card{background:#080807;background:var(–bg);padding:26px;position:relative;overflow:hidden;transition:background .15s}
+.plat-card:hover{background:#0e0d0b}
+.plat-card.defunct{opacity:.65}
+.plat-card .pn{font-family:‘DM Serif Display’,serif;font-size:1.9rem;line-height:1}
+.plat-card .pl{font-size:.7rem;color:var(–fg);margin-top:5px;font-weight:500}
+.plat-card .pm{font-size:.56rem;color:var(–muted);margin-top:4px;line-height:1.7}
+.plat-card .pe{font-size:.52rem;color:var(–dim);margin-top:6px;letter-spacing:.06em}
+.plat-card .ptype{position:absolute;top:12px;right:14px;font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:2px}
+
+/* tumblr breakdown */
+.tumblr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(–line);margin-top:2px}
+.tb-card{background:#080807;background:var(–bg);padding:24px;transition:background .15s}
+.tb-card:hover{background:#0e0d0b}
+.tb-num{font-family:‘DM Serif Display’,serif;font-size:1.8rem;color:#E87D47;line-height:1}
+.tb-name{font-size:.62rem;color:var(–fg);margin-top:5px}
+.tb-note{font-size:.54rem;color:var(–muted);margin-top:4px;line-height:1.6}
+.tb-era{font-size:.5rem;color:var(–dim);margin-top:5px;letter-spacing:.06em}
+
+/* reach timeline */
+.reach-wrap{display:grid;grid-template-columns:1fr 280px;gap:50px;align-items:start;margin-top:36px}
+.reach-bars{display:flex;flex-direction:column;gap:8px}
+.reach-row{display:flex;align-items:center;gap:14px}
+.reach-label{font-size:.62rem;color:var(–fg);width:160px;flex-shrink:0}
+.reach-track{height:28px;background:var(–line);border-radius:3px;flex:1;position:relative;overflow:hidden}
+.reach-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;padding-left:10px}
+.reach-fill span{font-size:.56rem;color:rgba(255,255,255,.85);white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.reach-count{font-size:.6rem;color:var(–muted);width:50px;text-align:right;flex-shrink:0}
+
+/* connection type donut */
+.type-split{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center}
+.type-legend{font-size:.62rem;color:var(–muted);line-height:2.6}
+.type-legend .tl-row{display:flex;align-items:center;gap:10px}
+.type-legend .tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.type-legend .tl-val{color:var(–fg);margin-left:4px}
+
+/* bars */
+.bar-row{display:grid;grid-template-columns:var(–cols,180px) 1fr 40px;align-items:center;gap:12px;margin-bottom:8px;opacity:0;transform:translateX(-8px);animation:sli .3s forwards}
+@keyframes sli{to{opacity:1;transform:none}}
+.bn{font-size:.62rem;color:#f0ece4;color:var(–fg)}
+.bn .note{font-size:.52rem;color:var(–muted);display:block;margin-top:1px}
+.bt{height:5px;background:var(–line);border-radius:3px;overflow:hidden}
+.bf{height:100%;border-radius:3px;transition:width .85s cubic-bezier(.16,1,.3,1)}
+.bv{font-size:.58rem;color:var(–muted);text-align:right}
+
+/* city grid */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px;background:var(–line)}
+.cc{background:#080807;background:var(–bg);padding:24px;transition:background .15s;cursor:default;border-top:3px solid transparent}
+.cc:hover{background:#0e0d0b;border-top-color:var(–work)}
+.cc .cn{font-family:‘DM Serif Display’,serif;font-size:1.9rem;color:var(–fg);line-height:1}
+.cc .cl{font-size:.62rem;color:var(–fg);margin-top:5px}
+.cc .cm{font-size:.54rem;color:var(–muted);margin-top:3px;line-height:1.6}
+.city-bar{height:3px;background:var(–work);margin-top:13px;border-radius:2px;transition:width 1s cubic-bezier(.16,1,.3,1)}
+
+/* occasions */
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px;background:var(–line)}
+.oc{background:#080807;background:var(–bg);padding:24px;transition:background .15s}
+.oc:hover{background:#0e0d0b}
+.on{font-family:‘DM Serif Display’,serif;font-size:2.4rem;line-height:1}
+.ol{font-size:.62rem;color:var(–fg);margin-top:6px}
+.om{font-size:.54rem;color:var(–muted);margin-top:4px;line-height:1.7}
+
+/* nationality */
+.nat-split{display:grid;grid-template-columns:1fr 1fr;gap:50px}
+@media(max-width:800px){.nat-split{grid-template-columns:1fr}}
+.donut-wrap{display:flex;align-items:center;gap:28px;margin-bottom:34px}
+.type-legend .tl-row span{font-size:.6rem}
+.ctabs{display:flex;gap:0;margin-bottom:20px;flex-wrap:wrap}
+.ctab{background:none;border:1px solid var(–line);border-right:none;color:var(–muted);font-family:‘DM Mono’,monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;cursor:pointer;transition:all .15s}
+.ctab:last-child{border-right:1px solid var(–line)}
+.ctab.active{color:var(–fg);background:var(–line)}
+.cpanel{display:none}.cpanel.active{display:block}
+.wp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px;background:var(–line);margin-top:32px}
+.wp-card{background:#080807;background:var(–bg);padding:22px}
+.wp-pct{font-family:‘DM Serif Display’,serif;font-size:2rem;line-height:1}
+.wp-name{font-size:.62rem;color:var(–fg);margin-top:5px}
+.wp-sub{font-size:.52rem;color:var(–muted);margin-top:3px}
+.wp-bt{height:4px;background:var(–line);border-radius:2px;margin-top:11px;overflow:hidden}
+.wp-bf{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.16,1,.3,1)}
+
+/* dating */
+.dg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:50px}
+@media(max-width:900px){.dg{grid-template-columns:1fr}}
+.big-r{font-family:‘DM Serif Display’,serif;font-size:5rem;color:var(–romance);line-height:1}
+.dot-row{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.dot-seg{height:7px;border-radius:4px;background:var(–romance);flex-shrink:0;transition:width .85s cubic-bezier(.16,1,.3,1)}
+.dot-label{font-size:.62rem;color:var(–fg);flex:1}
+.dot-count{font-size:.58rem;color:var(–muted)}
+
+/* timeline */
+.tl{display:grid;grid-template-columns:repeat(11,1fr);gap:5px;margin-top:44px;align-items:end}
+@media(max-width:700px){.tl{grid-template-columns:repeat(6,1fr)}}
+.ti{display:flex;flex-direction:column;align-items:center;gap:5px}
+.ti-n{font-family:‘DM Serif Display’,serif;text-align:center;line-height:1}
+.ti-b{width:25px;border-radius:3px 3px 0 0;transition:height .9s cubic-bezier(.16,1,.3,1)}
+.ti-d{width:8px;height:8px;border-radius:50%}
+.ti-e{font-size:.5rem;color:var(–fg);text-align:center;line-height:1.3;margin-top:3px}
+.ti-y{font-size:.44rem;color:var(–muted);text-align:center;margin-top:1px}
+
+/* insights */
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:2px;background:var(–line)}
+.ic{background:#080807;background:var(–bg);padding:32px;position:relative;transition:background .15s}
+.ic:hover{background:#0e0d0b}
+.ic .inum{font-family:‘DM Serif Display’,serif;font-size:4rem;color:var(–line);position:absolute;top:12px;right:20px;line-height:1}
+.ic .ih{font-family:‘DM Serif Display’,serif;font-size:1.2rem;line-height:1.2;color:var(–fg);margin-bottom:11px;position:relative}
+.ic .ib{font-size:.63rem;color:var(–muted);line-height:1.95}
+.ic .ib strong{color:var(–fg);font-weight:500}
+
+/* bubbles */
+.bw{position:relative;height:400px}
+.bubble{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:transform .2s,filter .2s;text-align:center;user-select:none}
+.bubble:hover{transform:scale(1.07)!important;filter:brightness(1.2);z-index:200!important}
+.bubble .bc{font-family:‘DM Serif Display’,serif;line-height:1}
+.bubble .bl{font-size:.49rem;text-transform:uppercase;letter-spacing:.04em;margin-top:3px;padding:0 6px;line-height:1.4}
+
+.tip{position:fixed;background:var(–fg);color:var(–bg);font-family:‘DM Mono’,monospace;font-size:.58rem;padding:4px 10px;pointer-events:none;z-index:999;transform:translate(-50%,-130%);white-space:nowrap;display:none}
+.tip.on{display:block}
+footer{padding:32px 50px;border-top:1px solid var(–line);display:flex;justify-content:space-between;font-size:.54rem;color:var(–muted);letter-spacing:.08em}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(–dim)}
+</style>
+
+</head>
+<body>
+<div class="tip" id="tip"></div>
+
+<header style="display:block;padding:52px 50px 44px">
+  <div style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:60px">
+    <div>
+      <h1>The Connection<br>Audit</h1>
+      <div style="margin-top:22px;font-size:.78rem;color:var(--muted);line-height:2;max-width:580px">
+        The people you connect with in life are everything. I wanted to see if I could map them all out. At least, as many as humanly&nbsp;/&nbsp;digitally possible. Because knowing who you know helps you understand who you are, where you've been, and of course, what you can do with all that connection.
+      </div>
+      <div style="margin-top:16px;font-size:.58rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase">
+        Madeleine Di Gangi &nbsp;&middot;&nbsp; March 2026
+      </div>
+    </div>
+    <div class="hstat">
+      <div class="n">~8,300</div>
+      <span class="l">estimated total reach<br>across all platforms</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="show('overview',this)">Overview</button>
+  <button onclick="show('platforms',this)">All Platforms</button>
+  <button onclick="show('cities',this)">Cities</button>
+  <button onclick="show('occasions',this)">How We Met</button>
+  <button onclick="show('nationality',this)">Nationality</button>
+  <button onclick="show('dating',this)">Dating</button>
+  <button onclick="show('work',this)">Work</button>
+  <button onclick="show('school',this)">Education</button>
+  <button onclick="show('timeline',this)">Timeline</button>
+  <button onclick="show('insights',this)">Findings</button>
+</nav>
+
+<!-- OVERVIEW -->
+
+<div class="view active" id="v-overview">
+
+  <div style="margin-bottom:40px;padding-bottom:36px;border-bottom:1px solid var(--line)">
+    <div style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--fg);line-height:1.8;letter-spacing:0.02em">
+      6 home cities &nbsp;&middot;&nbsp; 9 schools &nbsp;&middot;&nbsp; 28 workplaces &nbsp;&middot;&nbsp; 4 decades
+    </div>
+  </div>
+
+  <div style="margin-bottom:2px;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding-bottom:12px;border-bottom:1px solid var(--line)">Here's how many people exist in my digital network</div>
+
+  <div class="sg" style="margin-top:2px">
+    <div class="sc" style="--a:var(--reciprocal)">
+      <div class="l">People I'm connected with</div>
+      <div class="v">2,396</div>
+      <div class="s">Facebook + LinkedIn + Instagram<br>+ phone contacts</div>
+    </div>
+    <div class="sc" style="--a:var(--audience)">
+      <div class="l">People looking at my stuff</div>
+      <div class="v">~6,528</div>
+      <div class="s">Tumblr (6,287) · Spotify (169)<br>Flickr (72)</div>
+    </div>
+    <div class="sc" style="--a:var(--work)">
+      <div class="l">Total # people</div>
+      <div class="v">~8,300</div>
+      <div class="s">after estimated overlap<br>across all platforms</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);margin-top:2px;margin-bottom:50px">
+    <div style="background:#080807;padding:28px;border-top:3px solid var(--reciprocal)">
+      <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People I'm connected with</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--reciprocal);line-height:1">2,396</div>
+      <div style="font-size:.63rem;color:var(--muted);margin-top:10px;line-height:1.9">Social media connections — Facebook, LinkedIn, Instagram, phone contacts. The we-probably-know-each-other space.</div>
+    </div>
+    <div style="background:#080807;padding:28px;border-top:3px solid var(--audience)">
+      <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People who look at my stuff</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--audience);line-height:1">~6,528</div>
+      <div style="font-size:.63rem;color:var(--muted);margin-top:10px;line-height:1.9">Curation platform followers — Tumblr, Spotify, Flickr — who apparently appreciate my taste.</div>
+    </div>
+  </div>
+
+  <div class="sec">Named connections by type — hover to explore</div>
+  <div class="bw" id="bubbles"></div>
+</div>
+
+<!-- ALL PLATFORMS -->
+
+<div class="view" id="v-platforms">
+  <div class="sec">Every platform · active and defunct</div>
+
+  <!-- reach bar chart -->
+
+  <div>
+    <div>
+      <div class="sec">Platform reach — followers / connections</div>
+      <div class="reach-bars" id="reach-bars"></div>
+    </div>
+
+  </div>
+
+  <!-- tumblr breakdown -->
+
+  <div style="margin-top:50px">
+    <div class="sec">Tumblr · 5 blogs · 6,287 total followers</div>
+    <div class="tumblr-grid" id="tumblr-grid"></div>
+    <div style="margin-top:28px;font-size:.65rem;color:var(--muted);line-height:2.1;max-width:700px">
+      Tumblr was a curation community before Pinterest, a cool kid posting 'aesthetics' spot before Instagram (and before aesthetics had been mangled as a word), and a testing-ground for 'single-serving' schtick ideas before schticks ablazed social media. Used it as a place to try new things, meet new people, and show off the aesthetics, natch.
+    </div>
+  </div>
+
+  <!-- all platforms grid -->
+
+  <div style="margin-top:50px">
+    <div class="sec">All platforms</div>
+    <div class="plat-grid" id="plat-grid"></div>
+  </div>
+</div>
+
+<!-- CITIES -->
+
+<div class="view" id="v-cities">
+  <div class="sec">14 cities that built the named network</div>
+  <div class="cg" id="city-grid"></div>
+  <div style="margin-top:50px;display:grid;grid-template-columns:1fr 1fr;gap:50px">
+    <div>
+      <div class="sec">The shape</div>
+      <div style="font-size:.65rem;color:var(--muted);line-height:2.1">
+        <strong style="color:var(--fg)">NYC (730)</strong> — 30% of the network, arrived at age 26.<br><br>
+        <strong style="color:var(--fg)">Berlin (85)</strong> — most layered city outside NA: Etsy, MBA, dates, Ciclope festival.<br><br>
+        <strong style="color:var(--fg)">Cannes (45)</strong> — never lived there. Annual ritual compounds over 13 years.<br><br>
+        <strong style="color:var(--fg)">Palm Springs (6)</strong> — entirely weddings. Destination events create their own serendipity category.
+      </div>
+    </div>
+    <div>
+      <div class="sec">Cities you've dated in</div>
+      <div style="font-size:.65rem;color:var(--muted);line-height:2.2">NYC · Berlin · London · Toronto · Cannes · Tel Aviv · Copenhagen · Madrid · Rome · Stockholm</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW WE MET -->
+
+<div class="view" id="v-occasions">
+  <div class="sec">Ok so how did we meet</div>
+  <div class="og" id="occ-grid"></div>
+  <div style="margin-top:50px;max-width:680px">
+    <div class="sec">So what does this all mean?</div>
+    <div style="font-size:.65rem;color:var(--muted);line-height:2.2">
+      The ad industry is full of good people? Or maybe just that we're a bunch of shameless networkers. Or, social media has lemming'd us into adding everyone we can think of whenever a new platform takes hold? Probably all three.<br><br>
+      Everyone should go to more weddings, conferences, and join more leagues and clubs. Duh, this is nothing new. In-person interaction is easier when there's something shared that you're all there to take part in. Gives you something to discuss, commiserate about, etc.<br><br>
+      Also, job interviews can yield some new friends — even when you don't get the job. Fun fact: most of the people I'm connected to that I met in a job interview didn't hire me. But a few of them are friends for life.
+    </div>
+  </div>
+</div>
+
+<!-- NATIONALITY -->
+
+<div class="view" id="v-nationality">
+  <div class="sec">Nationality · 27 countries · 1,471 resolved of 2,396 (61%)</div>
+  <div class="nat-split">
+    <div>
+      <div class="sec">North American vs International (of resolved)</div>
+      <div class="donut-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120" id="donut-svg"></svg>
+        <div class="type-legend">
+          <div class="tl-row"><div class="tl-dot" style="background:var(--na)"></div><span>American</span><span class="tl-val">877 (60%)</span></div>
+          <div class="tl-row"><div class="tl-dot" style="background:var(--school)"></div><span>Canadian</span><span class="tl-val">457 (31%)</span></div>
+          <div class="tl-row"><div class="tl-dot" style="background:var(--intl)"></div><span>International</span><span class="tl-val">137 (9%)</span></div>
+          <div style="margin-top:8px;font-size:.52rem;color:var(--dim)">923 unresolved · 468 'haven't met'</div>
+        </div>
+      </div>
+      <div class="sec">All nationalities</div>
+      <div id="nat-bars"></div>
+    </div>
+    <div>
+      <div class="sec">By context</div>
+      <div class="ctabs">
+        <button class="ctab active" onclick="showCtx('work',this)">Work</button>
+        <button class="ctab" onclick="showCtx('school',this)">School</button>
+        <button class="ctab" onclick="showCtx('friends',this)">Thru friends</button>
+        <button class="ctab" onclick="showCtx('dating',this)">Dating</button>
+        <button class="ctab" onclick="showCtx('cannes',this)">Cannes</button>
+      </div>
+      <div id="ctx-work" class="cpanel active"></div>
+      <div id="ctx-school" class="cpanel"></div>
+      <div id="ctx-friends" class="cpanel"></div>
+      <div id="ctx-dating" class="cpanel"></div>
+      <div id="ctx-cannes" class="cpanel"></div>
+      <div class="wp-grid" id="wp-grid"></div>
+
+```
+  <div style="margin-top:36px">
+    <div class="sec">The 923 unresolved — what they are</div>
+    <div id="unresolved-bars"></div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div class="sec">LinkedIn "haven't met" — by era</div>
+    <div id="havent-met-bars"></div>
+    <div style="margin-top:16px;font-size:.61rem;color:var(--muted);line-height:1.9">
+      468 people accepted without ever meeting. Built steadily since 2009 — <strong style="color:var(--fg)">spiked in 2024 (68 in one year)</strong> during the active job search and MBA period. This is a layer unique to LinkedIn: professional ambient presence without personal relationship.
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- DATING -->
+
+<div class="view" id="v-dating">
+  <div class="sec">Romance & dating</div>
+  <div class="dg">
+    <div>
+      <div class="big-r">58</div>
+      <div style="font-size:.56rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:7px;margin-bottom:26px">connections</div>
+      <div class="sec">By type</div>
+      <div id="romance-bars"></div>
+    </div>
+    <div>
+      <div class="sec">By city</div>
+      <div id="date-city-bars"></div>
+    </div>
+    <div>
+      <div class="sec">By nationality</div>
+      <div id="date-nat-bars"></div>
+      <div style="margin-top:20px;font-size:.61rem;color:var(--muted);line-height:2.1">
+        <strong style="color:var(--fg)">German (5)</strong> leads — almost entirely Berlin.<br>You dated across <strong style="color:var(--fg)">8 nationalities</strong>.<br>Dating geography = professional geography.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORK -->
+
+<div class="view" id="v-work">
+  <div class="sec">Work · 700+ connections · 20+ years</div>
+  <div style="display:grid;grid-template-columns:1fr 260px;gap:50px;margin-top:30px;align-items:start">
+    <div id="work-bars"></div>
+    <div>
+      <div class="sec">Notable</div>
+      <div style="font-size:.63rem;color:var(--muted);line-height:2.2">
+        <div style="margin-bottom:13px"><span style="color:var(--work)">TAXI (144)</span> — more than any other single institution. First years in the industry produce disproportionate lifetime value.</div>
+        <div style="margin-bottom:13px"><span style="color:var(--work)">CPB Boulder (30)</span> — never worked there. Pure osmosis.</div>
+        <div><span style="color:var(--work)">Production (36)</span> — as many as CPB, built faster and often deeper.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHOOL -->
+
+<div class="view" id="v-school">
+  <div class="sec">Education · 8 schools · 5 countries</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2px;background:var(--line);margin-top:30px" id="school-grid"></div>
+</div>
+
+<!-- TIMELINE -->
+
+<div class="view" id="v-timeline">
+  <div class="sec">Named connections by life chapter</div>
+  <div class="tl" id="tl"></div>
+  <div style="display:flex;gap:18px;margin-top:20px;font-size:.56rem;color:var(--muted)">
+    <span><span style="color:var(--work)">■</span> Work</span>
+    <span><span style="color:var(--school)">■</span> School</span>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+
+<div class="view" id="v-insights">
+  <div class="sec">Nine findings</div>
+  <div class="ins-grid" id="ins-grid" style="margin-top:30px"></div>
+</div>
+
+<footer>
+  <span>Connection Audit · Madeleine Di Gangi · March 2026</span>
+  <span>~8,300 total reach · 2,396 named · 27 nationalities · 14 cities</span>
+</footer>
+
+<script>
+const D={
+  highLevel:[
+    {id:"work",label:"Work",count:724,color:"#E8C547"},
+    {id:"personal",label:"Through Friends",count:435,color:"#E87D47"},
+    {id:"school",label:"School",count:229,color:"#47C5E8"},
+    {id:"unclear",label:"Unclear",count:154,color:"#4a4845"},
+    {id:"community",label:"Community",count:100,color:"#8CE847"},
+    {id:"romance",label:"Romance",count:58,color:"#E84787"},
+    {id:"online",label:"Online",count:31,color:"#C547E8"}
+  ],
+  platforms:[
+    {name:"Tumblr (all blogs)",count:6287,type:"audience",color:"#E87D47",era:"2008–present",note:"5 blogs · mostly strangers who found something you made",active:true},
+    {name:"Facebook",count:1625,type:"reciprocal",color:"#47C5E8",era:"2006–present",note:"Mutual friends — most intentional layer",active:true},
+    {name:"Instagram",count:1636,type:"reciprocal",color:"#8CE847",era:"2012–present",note:"People you follow — a curated list, not inbound audience",active:true},
+    {name:"LinkedIn",count:1427,type:"reciprocal",color:"#47C5E8",era:"2006–present",note:"Professional — mutual recognition implied",active:true},
+    {name:"Spotify",count:169,type:"audience",color:"#E87D47",era:"2010–present",note:"Music followers",active:true},
+    {name:"Flickr",count:72,type:"audience",color:"#E87D47",era:"2006–2014",note:"Photo sharing",active:false},
+  ],
+  tumblrBlogs:[
+    {name:"puddling",followers:2794,note:"Photography of buildings reflected in puddles. Aesthetic single-serving blog that resonated in that particular early 2010s way.",era:"~2010–2016"},
+    {name:"madeleinepascal",followers:1656,note:"Curation blog when curation blogs were all the rage. Used to professionally gather inspiration, had a few viral posts before that was a thing. Met good people this way — even went to a Tumblr meetup at Cherry Tavern.",era:"~2008–2017"},
+    {name:"iphuckups",followers:1237,note:"iPhone autocorrect fails before Damn You Autocorrect came and stole the thunder. Got good traction, documenting connection back when.",era:"~2012–2016"},
+    {name:"drawings",followers:447,note:"Early buzz on BuzzFeed, then naturally went to Tumblr. Have been drawing and posting elsewhere for years — this is a snapshot in time.",era:"2014–present"},
+    {name:"Harry Dean Stanton Daily",followers:153,note:"Pictures of a favourite actor is a very niche community — but a community nonetheless.",era:"~2013–2016"}
+  ],
+  reachPlatforms:[
+    {label:"Tumblr (5 blogs)",count:6287,color:"#E87D47"},
+    {label:"Instagram",count:1636,color:"#8CE847"},
+    {label:"Facebook",count:1625,color:"#47C5E8"},
+    {label:"LinkedIn",count:1427,color:"#47C5E8"},
+    {label:"Phone contacts",count:1231,color:"#47E8B4"},
+    {label:"Spotify",count:169,color:"#1DB954"},
+    {label:"Flickr",count:72,color:"#FF0084"},
+  ],
+  cities:[
+    {city:"New York City",count:846,note:"Home base 2008–present"},
+    {city:"Toronto",count:468,note:"Education + early career"},
+    {city:"Berlin",count:85,note:"Etsy · MBA · dates · Ciclope"},
+    {city:"Ottawa",count:46,note:"Childhood schools"},
+    {city:"Moscow",count:51,note:"Anglo-American ×2"},
+    {city:"Cannes",count:52,note:"Festival × 13 years"},
+    {city:"Los Angeles",count:20,note:"Google + freelance"},
+    {city:"London",count:37,note:"Etsy office · Bowlie · dates · alumni · WPP"},
+    {city:"Singapore",count:13,note:"Ogilvy assignment"},
+    {city:"Budapest",count:11,note:"AIS (age 5–8)"},
+    {city:"Tel Aviv",count:9,note:"Production + dates"},
+    {city:"Palm Springs",count:6,note:"Weddings only"},
+    {city:"Mykonos",count:3,note:"Birthday party"},
+    {city:"Washington D.C.",count:3,note:"Canadian Embassy summers"}
+  ],
+  occasions:[
+    {label:"Through friends",count:435,color:"#E87D47",note:"A most successful way of meeting people apparently."},
+    {label:"Ad industry (ambient)",count:343,color:"#E8C547",note:"Say what you will about this business, it\u2019s good people."},
+    {label:"Commercial production",count:36,color:"#b09050",note:"NYC, Tel Aviv, Toronto: good people all over."},
+    {label:"Advertising festivals",count:40,color:"#c0a030",note:"Networking + partying = a perk of the job. 2006\u20132024"},
+    {label:"Dating app / dates",count:38,color:"#E84787",note:"Tinder, Hinge, Bumble, Raya aren\u2019t all trash! Sometimes you make friends."},
+    {label:"Belle & Sebastian message board",count:31,color:"#8CE847",note:"Yes, I was an early internet indie band nerd \u2014 and I still see some of them."},
+    {label:"Mad Men Bowling League",count:27,color:"#47C5E8",note:"NYC 2011\u20132020 \u00b7 co-captain. Bowling is an archaic way to meet people and also, still amazing."},
+    {label:"Social media (general)",count:26,color:"#C547E8",note:"DMs are alive and well."},
+    {label:"Met at a wedding",count:24,color:"#E87D47",note:"Love is alive and well."},
+    {label:"Job interview",count:22,color:"#c07040",note:"You can connect even if you don\u2019t get hired."},
+    {label:"Local bar / neighbourhood",count:8,color:"#a07050",note:"Tile Bar, Brooklyn Social, Canal Bar: formative friend spots."},
+    {label:"Tumblr",count:5,color:"#9040c0",note:"6,287 followers but 5 personal connections. Connection in a different way \u2014 I did make a few actual IRL friends here."},
+    {label:"Service provider",count:4,color:"#808080",note:"Hairdressers, waxers \u2013 all delightful."},
+    {label:"Charity events",count:4,color:"#80a880",note:"Do good, meet people."},
+    {label:"Met on an airplane",count:1,color:"#706c68",note:"I wish this was more, but hey \u2014 one is pretty good."},
+  ],
+  nationalities:[
+    {nat:"American",count:877,flag:"🇺🇸",note:""},
+    {nat:"Canadian",count:457,flag:"🇨🇦",note:""},
+    {nat:"British",count:30,flag:"🇬🇧"},{nat:"Australian",count:15,flag:"🇦🇺"},
+    {nat:"German",count:14,flag:"🇩🇪"},{nat:"South African",count:14,flag:"🇿🇦"},
+    {nat:"Brazilian",count:9,flag:"🇧🇷"},{nat:"Israeli",count:7,flag:"🇮🇱"},
+    {nat:"Danish",count:5,flag:"🇩🇰"},{nat:"Indian",count:5,flag:"🇮🇳"},
+    {nat:"French",count:5,flag:"🇫🇷"},{nat:"Spanish",count:5,flag:"🇪🇸"},
+    {nat:"New Zealander",count:4,flag:"🇳🇿"},{nat:"Japanese",count:3,flag:"🇯🇵"},
+    {nat:"Dutch",count:3,flag:"🇳🇱"},{nat:"Swedish",count:3,flag:"🇸🇪"},
+    {nat:"Singaporean",count:3,flag:"🇸🇬"},{nat:"Argentinian",count:2,flag:"🇦🇷"},
+    {nat:"Finnish",count:2,flag:"🇫🇮"},{nat:"Irish",count:1,flag:"🇮🇪"},
+    {nat:"Portuguese",count:1,flag:"🇵🇹"},{nat:"Italian",count:1,flag:"🇮🇹"},
+    {nat:"Scottish",count:1,flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{nat:"Polish",count:1,flag:"🇵🇱"},
+    {nat:"Mexican",count:1,flag:"🇲🇽"},{nat:"Peruvian",count:1,flag:"🇵🇪"},
+    {nat:"Austrian",count:1,flag:"🇦🇹"}
+  ],
+  ctxNat:{
+    work:[{nat:"American",count:520,flag:"🇺🇸"},{nat:"Canadian",count:210,flag:"🇨🇦"},{nat:"British",count:12,flag:"🇬🇧"},{nat:"South African",count:7,flag:"🇿🇦"},{nat:"Australian",count:7,flag:"🇦🇺"},{nat:"Israeli",count:4,flag:"🇮🇱"},{nat:"French",count:4,flag:"🇫🇷"},{nat:"Indian",count:3,flag:"🇮🇳"}],
+    school:[{nat:"Canadian",count:152,flag:"🇨🇦"},{nat:"American",count:62,flag:"🇺🇸"},{nat:"Brazilian",count:7,flag:"🇧🇷"},{nat:"German",count:4,flag:"🇩🇪"},{nat:"Danish",count:3,flag:"🇩🇰"},{nat:"South African",count:2,flag:"🇿🇦"},{nat:"Finnish",count:2,flag:"🇫🇮"}],
+    friends:[{nat:"American",count:153,flag:"🇺🇸"},{nat:"Canadian",count:75,flag:"🇨🇦"},{nat:"Australian",count:5,flag:"🇦🇺"},{nat:"South African",count:4,flag:"🇿🇦"},{nat:"British",count:1,flag:"🇬🇧"},{nat:"Japanese",count:1,flag:"🇯🇵"},{nat:"Argentinian",count:1,flag:"🇦🇷"}],
+    dating:[{nat:"American",count:8,flag:"🇺🇸"},{nat:"German",count:5,flag:"🇩🇪"},{nat:"Canadian",count:3,flag:"🇨🇦"},{nat:"British",count:2,flag:"🇬🇧"},{nat:"Israeli",count:1,flag:"🇮🇱"},{nat:"New Zealander",count:1,flag:"🇳🇿"},{nat:"Spanish",count:1,flag:"🇪🇸"},{nat:"South African",count:1,flag:"🇿🇦"}],
+    cannes:[{nat:"Canadian",count:4,flag:"🇨🇦"},{nat:"British",count:2,flag:"🇬🇧"},{nat:"American",count:1,flag:"🇺🇸"},{nat:"Brazilian",count:1,flag:"🇧🇷"},{nat:"German",count:1,flag:"🇩🇪"},{nat:"Danish",count:1,flag:"🇩🇰"},{nat:"Australian",count:1,flag:"🇦🇺"}]
+  },
+  workplaceIntl:[
+    {name:"Berlin School",total:61,intl:27,pct:44,color:"#47E8B4"},
+    {name:"Etsy",total:101,intl:12,pct:12,color:"#E8C547"},
+    {name:"Google",total:15,intl:1,pct:7,color:"#E8C547"},
+    {name:"TBWA/Chiat Day",total:90,intl:5,pct:6,color:"#E8C547"},
+    {name:"TAXI",total:234,intl:10,pct:4,color:"#E8C547"},
+    {name:"WME/Endeavor",total:45,intl:0,pct:0,color:"#4a4845"},
+    {name:"Trinity College",total:95,intl:0,pct:0,color:"#4a4845"},
+    {name:"Anglo-American Moscow",total:47,intl:0,pct:0,color:"#4a4845"}
+  ],
+  romanceTypes:[
+    {label:"Dates (app origin likely)",count:31,color:"#E84787"},
+    {label:"Dating app (explicit)",count:28,color:"#c03070"},
+    {label:"Brief relationship",count:11,color:"#a02050"},
+    {label:"Long-term relationship",count:8,color:"#801040"},
+    {label:"Raya",count:4,color:"#601030"},
+    {label:"Hinge",count:2,color:"#401020"},
+    {label:"Tinder",count:1,color:"#200810"}
+  ],
+  dateCities:[{city:"Unspecified",count:27},{city:"NYC",count:12},{city:"Berlin",count:5},{city:"London",count:4},{city:"Toronto",count:4},{city:"Cannes",count:3},{city:"Tel Aviv",count:2},{city:"Copenhagen",count:1}],
+  dateNats:[{nat:"American",count:8,flag:"🇺🇸"},{nat:"German",count:5,flag:"🇩🇪"},{nat:"Canadian",count:3,flag:"🇨🇦"},{nat:"British",count:2,flag:"🇬🇧"},{nat:"Israeli",count:1,flag:"🇮🇱"},{nat:"New Zealander",count:1,flag:"🇳🇿"},{nat:"Spanish",count:1,flag:"🇪🇸"},{nat:"South African",count:1,flag:"🇿🇦"}],
+  workBreakdown:[
+    {label:"Ad Industry (general)",count:290,note:"Origin lost, cluster coherent"},
+    {label:"TAXI (Toronto + NYC)",count:144,note:"Highest single-workplace density"},
+    {label:"TBWA / Chiat Day",count:64},{label:"Etsy",count:62,note:"NYC, Berlin, London, Paris"},
+    {label:"Production shoots",count:36,note:"On-location bonds"},
+    {label:"CPB Boulder (network)",count:30,note:"Never worked there — osmosis"},
+    {label:"McCann / McLaren",count:27},{label:"WME / Endeavor",count:23},
+    {label:"SS+K",count:18},{label:"Publicis",count:9},
+    {label:"Ogilvy Singapore",count:8},{label:"Canadian Embassy",count:8,note:"Moscow + D.C."},
+    {label:"Google",count:7},{label:"Anomaly",count:5},{label:"Grey",count:4}
+  ],
+  schoolBreakdown:[
+    {label:"Trinity College, University of Toronto",count:75,years:"1997–2003",city:"Toronto"},
+    {label:"Anglo-American School of Moscow",count:49,years:"1983–87 + 1995–97",city:"Moscow, Russia ×2"},
+    {label:"Berlin School of Creative Leadership, Executive MBA",count:50,years:"2023–25",city:"Berlin"},
+    {label:"Lisgar Collegiate High School",count:34,years:"1993–95",city:"Ottawa"},
+    {label:"Humber College Copywriting Program",count:15,years:"2003–04",city:"Toronto"},
+    {label:"American International School of Budapest",count:9,years:"1987–90",city:"Budapest, Hungary"},
+    {label:"Hopewell Avenue Middle School",count:8,years:"1990–93",city:"Ottawa"},
+    {label:"Rockliffe Park Elementary School",count:5,years:"1982–83",city:"Ottawa"}
+  ],
+  timeline:[
+    {era:"Moscow I",years:"1983–87",type:"school",count:15},{era:"Budapest",years:"1987–90",type:"school",count:9},
+    {era:"Ottawa",years:"1990–95",type:"school",count:47},{era:"Moscow II",years:"1995–97",type:"school",count:34},
+    {era:"Trinity",years:"1997–04",type:"school",count:90},{era:"Early Career",years:"2004–08",type:"work",count:170},
+    {era:"TAXI NYC",years:"2008–11",type:"work",count:95},{era:"TBWA + Freelance",years:"2011–16",type:"work",count:220},
+    {era:"Etsy + Endeavor",years:"2016–20",type:"work",count:120},{era:"Freelance / Google",years:"2020–24",type:"work",count:180},
+    {era:"Berlin School",years:"2023–26",type:"school",count:50}
+  ],
+  insights:[
+    {num:"01",headline:"6,287 strangers chose you on Tumblr",body:"Before Instagram, before the practice had a name, five Tumblr blogs collectively attracted 6,287 followers — people who found something specific and stayed. The drawings blog (447) is the smallest Tumblr but the most important: it's the only one still active and the one that connects most directly to your current work.",color:"#E87D47"},
+    {num:"02",headline:"Tumblr produced 5 named connections from 6,287 followers",body:"The conversion rate from audience to connection is vanishingly small — roughly 0.08%. One of those — Nate — made it all the way to phone contacts. The audience is real, but turning it into connection requires something more than content.",color:"#C547E8"},
+    {num:"03",headline:"1,231 phone contacts — the most deliberate layer",body:"You don't accidentally have someone's number. Of 1,231 phone contacts, most overlap with the digital audit — but 36 are net new, almost entirely dating connections that never made it to social media. The phone is where the most private layer of the network lives.",color:"#47E8B4"},
+    {num:"04",headline:"468 LinkedIn connections you've never met",body:"19.5% of your entire named network are people you accepted on LinkedIn without ever meeting — they built up steadily from 2009 onward, spiking in 2024 (68 in one year during the job search / MBA period). This is a distinct layer: not strangers like the Tumblr audience, not known contacts — but <strong>professional ambient connections</strong> who know your CV and you know their job title, and that's it. A real but thin kind of connection.",color:"#4a4845"},
+    {num:"09",headline:"349 people survived context collapse",body:"These appear on 2+ of your platforms. They didn't stay in their original context but migrated across your identity layers. These are almost certainly your most durable connections — the ones who followed you from one version of yourself to another.",color:"#E8C547"},
+    {num:"09",headline:"Berlin School: 44% international",body:"The most internationally diverse institution by far. Trinity College and Anglo-American Moscow show 0% international in resolved data — both were effectively NA monocultures despite their physical locations. Intensity of shared stakes, not geography, is what creates diversity of connection.",color:"#47C5E8"},
+    {num:"09",headline:"Production shoots (36) rival mid-size employers",body:"36 connections from on-location shoots — as many as CPB Boulder (never worked there). The shoot environment is Corporate Serendipity in concentrated form: compressed time, shared goal, foreign location, no exit.",color:"#b09050"},
+    {num:"09",headline:"Palm Springs: 6 connections, zero time lived there",body:"A city you've never lived in produced 6 connections — all from destination weddings. Wedding serendipity operates differently: you're curated into a room of people connected to someone you love, with every social guard lowered.",color:"#E87D47"},
+    {num:"09",headline:"The airplane: 1 connection",body:"Maximum theoretical serendipity. Forced proximity, finite duration, mutual mild anxiety, no phones (in the air). Yield: one. Perhaps you sleep on planes. Or perhaps serendipity requires more than proximity — it requires a reason to stay.",color:"#505050"},
+    {num:"09",headline:"Belle & Sebastian message board (31) > Friendster (1)",body:"A Belle & Sebastian fan message board from 2001–2007 produced 31 lasting connections. Friendster — which invented social networking — produced 1. Community of shared obsession outlasts platform architecture, every single time.",color:"#8CE847"}
+  ]
+};
+
+const $=id=>document.getElementById(id);
+function tip(e,t){const el=$('tip');el.textContent=t;el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.classList.add('on')}
+function untip(){$('tip').classList.remove('on')}
+
+function bars(id,data,color,maxOv,cols){
+  const c=$(id);if(!c)return;
+  const mx=maxOv||Math.max(...data.map(d=>d.count));
+  data.forEach((d,i)=>{
+    const r=document.createElement('div');r.className='bar-row';r.style.animationDelay=i*.03+'s';
+    if(cols)r.style.setProperty('--cols',cols);
+    const note=d.note?`<span class="note">${d.note}</span>`:'';
+    const flag=d.flag?d.flag+' ':'';
+    r.innerHTML=`<div class="bn">${flag}${d.label||d.nat}${note}</div><div class="bt"><div class="bf" style="width:0%;background:${d.color||color}" data-w="${(d.count/mx*100).toFixed(1)}"></div></div><div class="bv">${d.count}</div>`;
+    c.appendChild(r);
+  });
+  setTimeout(()=>{c.querySelectorAll('.bf').forEach(b=>{b.style.width=b.dataset.w+'%'})},200);
+}
+
+function initBubbles(){
+  const c=$('bubbles'),mx=Math.max(...D.highLevel.map(d=>d.count));
+  const pos=[{x:50,y:44},{x:24,y:39},{x:74,y:31},{x:40,y:72},{x:14,y:64},{x:67,y:69},{x:84,y:49}];
+  D.highLevel.forEach((d,i)=>{
+    const sz=68+(d.count/mx)*160,fs=Math.max(11,Math.min(26,sz/5));
+    const b=document.createElement('div');b.className='bubble';
+    b.style.cssText=`width:${sz}px;height:${sz}px;background:${d.color};left:calc(${pos[i].x}% - ${sz/2}px);top:calc(${pos[i].y}% - ${sz/2}px);z-index:${Math.floor(d.count/20)}`;
+    // pick text color based on bubble background luminance
+    const hex=d.color.replace('#','');
+    const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b2=parseInt(hex.substr(4,2),16);
+    const lum=(0.299*r+0.587*g+0.114*b2)/255;
+    const tc=lum>0.45?'rgba(0,0,0,.85)':'rgba(255,255,255,.92)';
+    const tlc=lum>0.45?'rgba(0,0,0,.65)':'rgba(255,255,255,.75)';
+    b.innerHTML=`<span class="bc" style="font-size:${fs}px;color:${tc}">${d.count}</span><span class="bl" style="color:${tlc}">${d.label}</span>`;
+    b.addEventListener('mousemove',e=>tip(e,`${d.label}: ${d.count}`));
+    b.addEventListener('mouseleave',untip);
+    c.appendChild(b);
+  });
+}
+
+function initPlatforms(){
+  // reach bars
+  const rb=$('reach-bars'),mx=D.reachPlatforms[0].count;
+  D.reachPlatforms.forEach((d,i)=>{
+    const row=document.createElement('div');row.className='reach-row';
+    row.style.animationDelay = i*.05+'s';
+    row.innerHTML=`<div class="reach-label">${d.label}</div><div class="reach-track"><div class="reach-fill" style="width:0%;background:${d.color}" data-w="${(d.count/mx*100).toFixed(1)}"><span>${d.count.toLocaleString()}</span></div></div>`;
+    rb.appendChild(row);
+  });
+  setTimeout(()=>{rb.querySelectorAll('.reach-fill').forEach(b=>{b.style.width=b.dataset.w+'%'})},200);
+
+  // tumblr blogs
+  const tg=$('tumblr-grid');
+  D.tumblrBlogs.forEach(b=>{
+    const card=document.createElement('div');card.className='tb-card';
+    card.innerHTML=`<div class="tb-num">${b.followers.toLocaleString()}</div><div class="tb-name">${b.name}</div><div class="tb-note">${b.note}</div><div class="tb-era">${b.era}</div>`;
+    tg.appendChild(card);
+  });
+
+  // all platforms grid
+  const pg=$('plat-grid');
+  const typeColors={reciprocal:'var(--reciprocal)',asymmetric:'var(--asymknown)',audience:'var(--audience)',defunct:'var(--dim)'};
+  const typeLabels={reciprocal:'reciprocal',asymmetric:'following',audience:'audience',defunct:'defunct'};
+  D.platforms.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='plat-card'+(p.type==='defunct'?' defunct':'');
+    card.style.borderTop=`3px solid ${typeColors[p.type]}`;
+    const countHtml=p.count?`<div class="pn" style="color:${typeColors[p.type]}">${p.count.toLocaleString()}</div>`:`<div class="pn" style="color:var(--muted)">—</div>`;
+    card.innerHTML=`<div class="ptype" style="color:${typeColors[p.type]};border:1px solid ${typeColors[p.type]}">${typeLabels[p.type]}</div>${countHtml}<div class="pl" style="color:var(--fg)">${p.name}</div><div class="pm">${p.note}</div><div class="pe" style="color:var(--muted)">${p.era}</div>`;
+    pg.appendChild(card);
+  });
+}
+
+function initCities(){
+  const c=$('city-grid'),mx=D.cities[0].count;
+  D.cities.forEach(d=>{
+    const card=document.createElement('div');card.className='cc';
+    card.innerHTML=`<div class="cn">${d.count}</div><div class="cl">${d.city}</div><div class="cm">${d.note}</div><div class="city-bar" style="width:0%" data-w="${(d.count/mx*100).toFixed(1)}"></div>`;
+    card.addEventListener('mousemove',e=>tip(e,`${d.city}: ${d.count}`));
+    card.addEventListener('mouseleave',untip);
+    c.appendChild(card);
+  });
+  setTimeout(()=>{c.querySelectorAll('.city-bar').forEach(b=>{b.style.width=b.dataset.w+'%'})},150);
+}
+
+function initOccasions(){
+  const c=$('occ-grid');
+  D.occasions.forEach(d=>{
+    const card=document.createElement('div');card.className='oc';card.style.borderTop=`3px solid ${d.color}`;
+    card.innerHTML=`<div class="on" style="color:${d.color}">${d.count}</div><div class="ol">${d.label}</div><div class="om">${d.note}</div>`;
+    c.appendChild(card);
+  });
+}
+
+function initNat(){
+  const svg=$('donut-svg');
+  const segs=[{v:877,c:'#8a7a60'},{v:457,c:'#47C5E8'},{v:137,c:'#47E8B4'}];
+  const tot=segs.reduce((s,d)=>s+d.v,0);
+  let angle=-90;const r=48,cx=60,cy=60;
+  segs.forEach(s=>{
+    const a=(s.v/tot)*360,a1=angle*Math.PI/180,a2=(angle+a)*Math.PI/180,laf=a>180?1:0;
+    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${laf} 1 ${x2},${y2} Z`);
+    path.setAttribute('fill',s.c);path.setAttribute('opacity','.9');
+    svg.appendChild(path);angle+=a;
+  });
+  const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  circle.setAttribute('cx',60);circle.setAttribute('cy',60);circle.setAttribute('r',28);
+  circle.setAttribute('fill','var(--bg)');svg.appendChild(circle);
+
+  bars('nat-bars',D.nationalities,'#47E8B4',800,'160px');
+  Object.entries(D.ctxNat).forEach(([k,v])=>{bars('ctx-'+k,v,'#47E8B4',Math.max(...v.map(d=>d.count)))});
+
+  // unresolved breakdown
+  bars('unresolved-bars',[
+    {label:"LinkedIn \"haven\'t met\" (no geo in title)",count:445,color:'#706c68'},
+    {label:"Genuinely unknown / unclear",count:169,color:'#706c68'},
+    {label:"Known intl city — no nat assumed",count:82,color:'#47E8B4'},
+    {label:"Friends / work (no city specified)",count:150,color:'#807c78'},
+    {label:"Family (geo irrelevant)",count:56,color:'#7a7470'},
+    {label:"Online / social media origin",count:21,color:'#9060a0'}
+  ],'#4a4845',450,'200px');
+
+  // haven't met by era
+  bars('havent-met-bars',[
+    {label:"2009–12",count:35,color:'#6a6460'},
+    {label:"2013–16",count:88,color:'#6a6460'},
+    {label:"2017–20",count:150,color:'#7a7470'},
+    {label:"2021–24",count:150,color:'#8a8480'},
+    {label:"2025–26",count:40,color:'#9a9490'}
+  ],'#4a4845',150,'80px');
+
+  const wpg=$('wp-grid');
+  D.workplaceIntl.forEach(d=>{
+    const card=document.createElement('div');card.className='wp-card';
+    const col=d.pct>20?'var(--intl)':d.pct>0?'var(--work)':'var(--dim)';
+    card.innerHTML=`<div class="wp-pct" style="color:${col}">${d.pct}%</div><div class="wp-name">${d.name}</div><div class="wp-sub">${d.intl} intl of ${d.total}</div><div class="wp-bt"><div class="wp-bf" style="width:0%;background:${col}" data-w="${d.pct}"></div></div>`;
+    wpg.appendChild(card);
+  });
+  setTimeout(()=>{wpg.querySelectorAll('.wp-bf').forEach(b=>{b.style.width=b.dataset.w+'%'})},200);
+}
+
+function showCtx(name,btn){
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');$('ctx-'+name).classList.add('active');
+}
+
+function initDating(){
+  bars('romance-bars',D.romanceTypes,'#E84787',35);
+  const c=$('date-city-bars'),mx=Math.max(...D.dateCities.map(d=>d.count));
+  D.dateCities.forEach(d=>{
+    const row=document.createElement('div');row.className='dot-row';
+    const w=Math.max(8,(d.count/mx)*150);
+    row.innerHTML=`<div class="dot-seg" style="width:0" data-w="${w}px"></div><span class="dot-label">${d.city}</span><span class="dot-count">${d.count}</span>`;
+    c.appendChild(row);
+  });
+  setTimeout(()=>{c.querySelectorAll('.dot-seg').forEach(b=>{b.style.width=b.dataset.w})},200);
+  bars('date-nat-bars',D.dateNats,'#E84787',10);
+}
+
+function initSchool(){
+  const c=$('school-grid');
+  D.schoolBreakdown.forEach(s=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:#080807;padding:24px;border-top:3px solid #47C5E8';
+    card.innerHTML=`<div style="font-family:DM Serif Display,serif;font-size:1.8rem;color:#47C5E8;line-height:1">${s.count}</div><div style="font-size:.63rem;color:#f0ece4;margin-top:6px">${s.label}</div><div style="font-size:.52rem;color:#5a5650;margin-top:3px;line-height:1.7">${s.years} · ${s.city}</div>`;
+    c.appendChild(card);
+  });
+}
+
+function initTimeline(){
+  const c=$('tl'),mx=Math.max(...D.timeline.map(d=>d.count));
+  D.timeline.forEach(d=>{
+    const h=Math.max(6,(d.count/mx)*128),col=d.type==='school'?'var(--school)':'var(--work)';
+    const item=document.createElement('div');item.className='ti';
+    item.innerHTML=`<div class="ti-n" style="color:${col};font-size:${Math.max(.62,d.count/mx*1.2)}rem">${d.count}</div><div class="ti-b" style="height:0;background:${col};opacity:.85" data-h="${h}"></div><div class="ti-d" style="background:${col}"></div><div class="ti-e">${d.era}</div><div class="ti-y">${d.years}</div>`;
+    c.appendChild(item);
+  });
+  setTimeout(()=>{c.querySelectorAll('.ti-b').forEach(b=>{b.style.height=b.dataset.h+'px'})},100);
+}
+
+function initInsights(){
+  const c=$('ins-grid');
+  D.insights.forEach(ins=>{
+    const card=document.createElement('div');card.className='ic';card.style.borderTop=`3px solid ${ins.color}`;
+    card.innerHTML=`<div class="inum">${ins.num}</div><div class="ih">${ins.headline}</div><div class="ib">${ins.body}</div>`;
+    c.appendChild(card);
+  });
+}
+
+const inited={};
+function show(name,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  $('v-'+name).classList.add('active');btn.classList.add('active');
+  if(inited[name])return;inited[name]=true;
+  if(name==='platforms')initPlatforms();
+  if(name==='cities')initCities();
+  if(name==='occasions')initOccasions();
+  if(name==='nationality')initNat();
+  if(name==='dating')initDating();
+  if(name==='work')bars('work-bars',D.workBreakdown,'#E8C547',300);
+  if(name==='school')initSchool();
+  if(name==='timeline')initTimeline();
+  if(name==='insights')initInsights();
+}
+
+window.addEventListener('load',()=>{initBubbles();inited['overview']=true});
+</script>
+
+</body>
+</html>
