@@ -6,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Connection Audit — Madeleine Di Gangi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#080807; --fg:#f0ece4; --muted:#5a5650; --dim:#2a2825; --line:#141210;
@@ -15,7 +16,7 @@
     --na:#8a7a60; --audience:#E87D47; --reciprocal:#47C5E8; --asymknown:#8CE847;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#080807;background:var(--bg);color:#f0ece4;color:var(--fg);font-family:'DM Mono',monospace;overflow-x:hidden}
+  body{background:#080807;background:var(--bg);color:#f0ece4;color:var(--fg);font-family:'Inter',sans-serif;overflow-x:hidden}
 
 header{padding:50px 50px 34px;border-bottom:1px solid var(–line);display:grid;grid-template-columns:1fr auto;align-items:end;gap:36px}
 h1{font-family:‘DM Serif Display’,serif;font-size:clamp(2.5rem,5vw,4.8rem);line-height:.92;letter-spacing:-.02em}
@@ -214,7 +215,7 @@ footer{padding:32px 50px;border-top:1px solid var(–line);display:flex;justify-
 <div class="view active" id="v-overview">
 
   <div style="margin-bottom:40px;padding-bottom:36px;border-bottom:1px solid var(--line)">
-    <div style="font-family:'DM Serif Display',serif;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--fg);line-height:1.8;letter-spacing:0.02em">
+    <div style="font-family:'Inter',sans-serif;font-size:clamp(1rem,2.2vw,1.4rem);color:var(--fg);line-height:1.8;letter-spacing:0.02em">
       6 home cities &nbsp;&middot;&nbsp; 9 schools &nbsp;&middot;&nbsp; 28 workplaces &nbsp;&middot;&nbsp; 4 decades
     </div>
   </div>
@@ -242,12 +243,12 @@ footer{padding:32px 50px;border-top:1px solid var(–line);display:flex;justify-
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);margin-top:2px;margin-bottom:50px">
     <div style="background:#080807;padding:28px;border-top:3px solid var(--reciprocal)">
       <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People I'm connected with</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--reciprocal);line-height:1">2,396</div>
+      <div style="font-family:'Inter',sans-serif;font-size:2rem;color:var(--reciprocal);line-height:1">2,396</div>
       <div style="font-size:.63rem;color:var(--muted);margin-top:10px;line-height:1.9">Social media connections — Facebook, LinkedIn, Instagram, phone contacts. The we-probably-know-each-other space.</div>
     </div>
     <div style="background:#080807;padding:28px;border-top:3px solid var(--audience)">
       <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People who look at my stuff</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:2rem;color:var(--audience);line-height:1">~6,528</div>
+      <div style="font-family:'Inter',sans-serif;font-size:2rem;color:var(--audience);line-height:1">~6,528</div>
       <div style="font-size:.63rem;color:var(--muted);margin-top:10px;line-height:1.9">Curation platform followers — Tumblr, Spotify, Flickr — who apparently appreciate my taste.</div>
     </div>
   </div>
@@ -773,7 +774,7 @@ function initSchool(){
   D.schoolBreakdown.forEach(s=>{
     const card=document.createElement('div');
     card.style.cssText='background:#080807;padding:24px;border-top:3px solid #47C5E8';
-    card.innerHTML=`<div style="font-family:DM Serif Display,serif;font-size:1.8rem;color:#47C5E8;line-height:1">${s.count}</div><div style="font-size:.63rem;color:#f0ece4;margin-top:6px">${s.label}</div><div style="font-size:.52rem;color:#5a5650;margin-top:3px;line-height:1.7">${s.years} · ${s.city}</div>`;
+    card.innerHTML=`<div style="font-family:Inter,sans-serif;font-size:1.8rem;color:#47C5E8;line-height:1">${s.count}</div><div style="font-size:.63rem;color:#f0ece4;margin-top:6px">${s.label}</div><div style="font-size:.52rem;color:#5a5650;margin-top:3px;line-height:1.7">${s.years} · ${s.city}</div>`;
     c.appendChild(card);
   });
 }
