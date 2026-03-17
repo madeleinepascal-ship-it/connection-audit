@@ -173,6 +173,14 @@ nav button.active{color:var(–fg);background:var(–line);border-bottom:2px sol
 .tip.on{display:block}
 footer{padding:32px 50px;border-top:1px solid var(–line);display:flex;justify-content:space-between;font-size:.54rem;color:var(–muted);letter-spacing:.08em}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(–dim)}
+
+/* ── OVERRIDES ── */
+nav button{color:#E84787;font-size:.76rem;letter-spacing:.07em;padding:16px 22px}
+nav button:hover{color:#f0ece4;background:rgba(232,71,135,.18);border-bottom:none}
+nav button.active{color:#080807!important;background:#E84787!important;border-bottom:none!important;margin-bottom:0!important;font-weight:600}
+.sec{font-size:.75rem;letter-spacing:.1em;color:#f0ece4;border-bottom:1px solid #141210;padding-bottom:12px;margin-bottom:26px}
+.ic .inum{display:none}
+.ic .ih{font-size:1.4rem;line-height:1.25;margin-bottom:13px}
 </style>
 
 </head>
@@ -182,12 +190,13 @@ footer{padding:32px 50px;border-top:1px solid var(–line);display:flex;justify-
 <header style="display:block;padding:52px 50px 44px">
   <div style="display:grid;grid-template-columns:1fr auto;align-items:start;gap:60px">
     <div>
-      <h1>The Connection<br>Audit</h1>
-      <div style="margin-top:22px;font-size:.78rem;color:var(--muted);line-height:2;max-width:580px">
+      <h1>The Connection Audit</h1>
+      <div style="margin-top:12px;font-size:1.05rem;color:#f0ece4;font-style:italic;letter-spacing:-.01em">by Madeleine Di Gangi</div>
+      <div style="margin-top:22px;font-size:.95rem;color:#f0ece4;line-height:1.9;max-width:580px">
         The people you connect with in life are everything. I wanted to see if I could map them all out. At least, as many as humanly&nbsp;/&nbsp;digitally possible. Because knowing who you know helps you understand who you are, where you've been, and of course, what you can do with all that connection.
       </div>
       <div style="margin-top:16px;font-size:.58rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase">
-        Madeleine Di Gangi &nbsp;&middot;&nbsp; March 2026
+        March 2026
       </div>
     </div>
     <div class="hstat">
@@ -794,7 +803,7 @@ function initInsights(){
   const c=$('ins-grid');
   D.insights.forEach(ins=>{
     const card=document.createElement('div');card.className='ic';card.style.borderTop=`3px solid ${ins.color}`;
-    card.innerHTML=`<div class="inum">${ins.num}</div><div class="ih">${ins.headline}</div><div class="ib">${ins.body}</div>`;
+    card.innerHTML=`<div class="ih">${ins.headline}</div><div class="ib">${ins.body}</div>`;
     c.appendChild(card);
   });
 }
