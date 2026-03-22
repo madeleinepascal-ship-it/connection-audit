@@ -141,7 +141,7 @@ nav button.active{color:var(–fg);background:var(–line);border-bottom:2px sol
 .dot-row{display:flex;align-items:center;gap:11px;margin-bottom:9px}
 .dot-seg{height:7px;border-radius:4px;background:var(–romance);flex-shrink:0;transition:width .85s cubic-bezier(.16,1,.3,1)}
 .dot-label{font-size:.75rem;color:var(–fg);flex:1;letter-spacing:.01em}
-.dot-count{font-size:.58rem;color:var(–muted)}
+.dot-count{font-size:.58rem;color:var(–muted);width:24px;text-align:right;flex-shrink:0}
 
 /* timeline */
 .tl{display:grid;grid-template-columns:repeat(11,1fr);gap:5px;margin-top:44px;align-items:end}
@@ -199,10 +199,6 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
         March 2026
       </div>
     </div>
-    <div class="hstat">
-      <div class="n">~8,300</div>
-      <span class="l">estimated total reach<br>across all platforms</span>
-    </div>
   </div>
 </header>
 
@@ -238,7 +234,7 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
     <div style="background:#080807;padding:28px;border-top:3px solid var(--audience)">
       <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People who look at my stuff</div>
       <div style="font-family:'Inter',sans-serif;font-size:2rem;color:var(--audience);line-height:1">~6,528</div>
-      <div style="font-size:.82rem;color:#c0bcb4;margin-top:10px;line-height:1.9">Curation platform followers — Tumblr, Spotify, Flickr — who apparently appreciate my taste.</div>
+      <div style="font-size:.82rem;color:#c0bcb4;margin-top:10px;line-height:1.9">Curation platform followers — Tumblr, Spotify, Flickr.</div>
     </div>
   </div>
 
@@ -433,7 +429,6 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
 <!-- INSIGHTS -->
 
 <div class="view" id="v-insights">
-  <div class="sec">Nine findings</div>
   <div class="ins-grid" id="ins-grid" style="margin-top:30px"></div>
 </div>
 
@@ -557,7 +552,7 @@ const D={
   workBreakdown:[
     {label:"TAXI (Toronto + NYC)",count:144,note:"Highest single-workplace density"},
     {label:"TBWA / Chiat Day",count:64},{label:"Etsy",count:62,note:"NYC, Berlin, London, Paris"},
-    {label:"Production shoots",count:36,note:"On-location bonds"},
+    {label:"Production shoots",count:36,note:"Fast friendships during intensified work times"},
     {label:"Through CPB Boulder network",count:30,note:"Never worked there — interview was fruitful"},
     {label:"McCann / McLaren",count:27},{label:"WME / Endeavor",count:23},
     {label:"SS+K",count:18},{label:"Publicis",count:9},
@@ -582,18 +577,7 @@ const D={
     {era:"Etsy + Endeavor",years:"2016–20",type:"work",count:120},{era:"Freelance / Google",years:"2020–24",type:"work",count:180},
     {era:"Berlin School",years:"2023–26",type:"school",count:50}
   ],
-  insights:[
-    {num:"01",headline:"6,287 strangers chose you on Tumblr",body:"Before Instagram, before the practice had a name, five Tumblr blogs collectively attracted 6,287 followers — people who found something specific and stayed. The drawings blog (447) is the smallest Tumblr but the most important: it's the only one still active and the one that connects most directly to your current work.",color:"#E87D47"},
-    {num:"02",headline:"Tumblr produced 5 named connections from 6,287 followers",body:"The conversion rate from audience to connection is vanishingly small — roughly 0.08%. One of those — Nate — made it all the way to phone contacts. The audience is real, but turning it into connection requires something more than content.",color:"#C547E8"},
-    {num:"03",headline:"1,231 phone contacts — the most deliberate layer",body:"You don't accidentally have someone's number. Of 1,231 phone contacts, most overlap with the digital audit — but 36 are net new, almost entirely dating connections that never made it to social media. The phone is where the most private layer of the network lives.",color:"#47E8B4"},
-    {num:"04",headline:"468 LinkedIn connections you've never met",body:"19.5% of your entire named network are people you accepted on LinkedIn without ever meeting — they built up steadily from 2009 onward, spiking in 2024 (68 in one year during the job search / MBA period). This is a distinct layer: not strangers like the Tumblr audience, not known contacts — but <strong>professional ambient connections</strong> who know your CV and you know their job title, and that's it. A real but thin kind of connection.",color:"#4a4845"},
-    {num:"09",headline:"349 people survived context collapse",body:"These appear on 2+ of your platforms. They didn't stay in their original context but migrated across your identity layers. These are almost certainly your most durable connections — the ones who followed you from one version of yourself to another.",color:"#E8C547"},
-    {num:"09",headline:"Berlin School: 44% international",body:"The most internationally diverse institution by far. Trinity College and Anglo-American Moscow show 0% international in resolved data — both were effectively NA monocultures despite their physical locations. Intensity of shared stakes, not geography, is what creates diversity of connection.",color:"#47C5E8"},
-    {num:"09",headline:"Production shoots (36) rival mid-size employers",body:"36 connections from on-location shoots — as many as CPB Boulder (never worked there). The shoot environment is Corporate Serendipity in concentrated form: compressed time, shared goal, foreign location, no exit.",color:"#b09050"},
-    {num:"09",headline:"Palm Springs: 6 connections, zero time lived there",body:"A city you've never lived in produced 6 connections — all from destination weddings. Wedding serendipity operates differently: you're curated into a room of people connected to someone you love, with every social guard lowered.",color:"#E87D47"},
-    {num:"09",headline:"The airplane: 1 connection",body:"Maximum theoretical serendipity. Forced proximity, finite duration, mutual mild anxiety, no phones (in the air). Yield: one. Perhaps you sleep on planes. Or perhaps serendipity requires more than proximity — it requires a reason to stay.",color:"#505050"},
-    {num:"09",headline:"Belle & Sebastian message board (31) > Friendster (1)",body:"A Belle & Sebastian fan message board from 2001–2007 produced 31 lasting connections. Friendster — which invented social networking — produced 1. Community of shared obsession outlasts platform architecture, every single time.",color:"#8CE847"}
-  ]
+  insights:[]
 };
 
 const $=id=>document.getElementById(id);
