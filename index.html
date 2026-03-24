@@ -202,6 +202,14 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
   </div>
 </header>
 
+<div id="particle-hero" style="position:relative;width:100%;height:min(640px,72vh);border-bottom:1px solid #141210;overflow:hidden;background:#080807;cursor:crosshair">
+  <canvas id="pcanvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <div style="position:absolute;bottom:26px;left:50px;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:#2a2825;pointer-events:none;user-select:none">
+    1,731 named connections &nbsp;·&nbsp; hover to explore
+  </div>
+  <div id="plegend" style="position:absolute;top:26px;right:50px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none"></div>
+</div>
+
 <nav>
   <button class="active" onclick="show('overview',this)">Overview</button>
   <button onclick="show('platforms',this)">All Platforms</button>
@@ -770,6 +778,90 @@ function initInsights(){
   });
 }
 
+function initParticles(){
+  const hero=$('particle-hero');
+  const canvas=$('pcanvas');
+  const ctx=canvas.getContext('2d');
+
+  function resize(){canvas.width=hero.offsetWidth;canvas.height=hero.offsetHeight;}
+  resize();
+  window.addEventListener('resize',()=>{resize();});
+
+  // Legend
+  const leg=$('plegend');
+  D.highLevel.forEach(cat=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:7px;font-size:.52rem;color:#5a5650;letter-spacing:.07em;text-transform:uppercase';
+    row.innerHTML=`<span style="color:#c0bcb4;font-size:.54rem">${cat.label} <span style="color:#5a5650">${cat.count}</span></span><span style="width:7px;height:7px;border-radius:50%;background:${cat.color};display:inline-block;flex-shrink:0"></span>`;
+    leg.appendChild(row);
+  });
+
+  // Build particles
+  const particles=[];
+  D.highLevel.forEach(cat=>{
+    for(let i=0;i<cat.count;i++){
+      particles.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        vx:(Math.random()-.5)*.5,
+        vy:(Math.random()-.5)*.5,
+        label:cat.label,
+        color:cat.color,
+        r:2
+      });
+    }
+  });
+
+  let mx=-9999,my=-9999,animating=true;
+
+  canvas.addEventListener('mousemove',e=>{
+    const rect=canvas.getBoundingClientRect();
+    const sx=canvas.width/rect.width,sy=canvas.height/rect.height;
+    mx=(e.clientX-rect.left)*sx;
+    my=(e.clientY-rect.top)*sy;
+    // tooltip: find nearest dot
+    let best=null,bestD=20;
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      const d=Math.hypot(p.x-mx,p.y-my);
+      if(d<bestD){bestD=d;best=p;}
+    }
+    if(best){const cat=D.highLevel.find(c=>c.label===best.label);tip(e,`${best.label} · ${cat.count}`);}
+    else untip();
+  });
+  canvas.addEventListener('mouseleave',()=>{mx=-9999;my=-9999;untip();});
+
+  function frame(){
+    if(!animating)return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i];
+      const dx=p.x-mx,dy=p.y-my,dist=Math.hypot(dx,dy);
+      if(dist<110&&dist>0){
+        const f=(110-dist)/110*.7;
+        p.vx+=dx/dist*f;p.vy+=dy/dist*f;
+      }
+      p.vx*=.97;p.vy*=.97;
+      const spd=Math.hypot(p.vx,p.vy);
+      if(spd>1.8){p.vx=p.vx/spd*1.8;p.vy=p.vy/spd*1.8;}
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<-3)p.x=canvas.width+3; else if(p.x>canvas.width+3)p.x=-3;
+      if(p.y<-3)p.y=canvas.height+3; else if(p.y>canvas.height+3)p.y=-3;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);
+      ctx.fillStyle=p.color;ctx.globalAlpha=.72;ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    requestAnimationFrame(frame);
+  }
+  frame();
+
+  // Pause when scrolled out of view
+  new IntersectionObserver(entries=>{
+    animating=entries[0].isIntersecting;
+    if(animating)frame();
+  },{threshold:0}).observe(hero);
+}
+
 const inited={};
 function show(name,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -787,7 +879,7 @@ function show(name,btn){
   if(name==='insights')initInsights();
 }
 
-window.addEventListener('load',()=>{initBubbles();inited['overview']=true});
+window.addEventListener('load',()=>{initParticles();initBubbles();inited['overview']=true});
 </script>
 
 </body>
