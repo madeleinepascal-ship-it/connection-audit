@@ -181,6 +181,18 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
 .sec{font-size:.75rem;letter-spacing:.1em;color:#f0ece4;border-bottom:1px solid #141210;padding-bottom:12px;margin-bottom:26px}
 .ic .inum{display:none}
 .ic .ih{font-size:1.4rem;line-height:1.25;margin-bottom:13px}
+.face{position:absolute;left:0;top:0;border:none;background:none;padding:0;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent}
+.face .fc{display:block;width:100%;height:100%;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.face{transition:opacity .5s}
+.face.pre{opacity:0;pointer-events:none}
+.face.pre .fc{transform:scale(.15)}
+.face.pop .fc{transition:transform .7s cubic-bezier(.34,1.56,.64,1)}
+.face:hover .fc,.face:focus-visible .fc{transform:scale(1.12)}
+.face:focus-visible{outline:none}
+.face:focus-visible .fc circle.body{stroke:#f0ece4;stroke-width:3}
+.face .mouth{transition:d .25s}
+.face .fl{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:8px;white-space:nowrap;text-align:center;font-family:'Inter',sans-serif;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:#f0ece4;pointer-events:none}
+.face .fl span{display:block;color:#8a857c;font-size:.52rem;margin-top:2px;letter-spacing:.07em}
 </style>
 
 </head>
@@ -202,12 +214,12 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
   </div>
 </header>
 
-<div id="particle-hero" style="position:relative;width:100%;height:min(640px,72vh);border-bottom:1px solid #141210;overflow:hidden;background:#080807;cursor:crosshair">
-  <canvas id="pcanvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-  <div style="position:absolute;bottom:26px;left:50px;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:#2a2825;pointer-events:none;user-select:none">
-    1,731 named connections &nbsp;·&nbsp; hover to explore
+<div id="particle-hero" style="position:relative;width:100%;height:min(640px,72vh);border-bottom:1px solid #141210;overflow:hidden;background:#080807">
+  <canvas id="pcanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+  <div id="faces" style="position:absolute;inset:0"></div>
+  <div style="position:absolute;bottom:22px;left:clamp(16px,4vw,50px);right:16px;font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:#8a857c;pointer-events:none;user-select:none">
+    1,731 named connections, sorted eight ways &nbsp;·&nbsp; click a face to explore
   </div>
-  <div id="plegend" style="position:absolute;top:26px;right:50px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none"></div>
 </div>
 
 <nav>
@@ -779,86 +791,137 @@ function initInsights(){
 }
 
 function initParticles(){
-  const hero=$('particle-hero');
-  const canvas=$('pcanvas');
-  const ctx=canvas.getContext('2d');
-
-  function resize(){canvas.width=hero.offsetWidth;canvas.height=hero.offsetHeight;}
-  resize();
-  window.addEventListener('resize',()=>{resize();});
-
-  // Legend
-  const leg=$('plegend');
-  D.highLevel.forEach(cat=>{
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:7px;font-size:.52rem;color:#5a5650;letter-spacing:.07em;text-transform:uppercase';
-    row.innerHTML=`<span style="color:#c0bcb4;font-size:.54rem">${cat.label} <span style="color:#5a5650">${cat.count}</span></span><span style="width:7px;height:7px;border-radius:50%;background:${cat.color};display:inline-block;flex-shrink:0"></span>`;
-    leg.appendChild(row);
+  const hero=$('particle-hero'),box=$('faces');
+  const cats=[
+    {id:'work',label:'Work',sub:'724 people',color:'#E8C547',w:1},
+    {id:'platforms',label:'All Platforms',sub:'~8,300 reach',color:'#C547E8',w:.95},
+    {id:'cities',label:'Cities',sub:'14 cities',color:'#8CE847',w:.85},
+    {id:'nationality',label:'Nationality',sub:'27 nationalities',color:'#47E8B4',w:.85},
+    {id:'occasions',label:'How We Met',sub:'15 ways',color:'#E87D47',w:.8},
+    {id:'school',label:'Education',sub:'9 schools',color:'#47C5E8',w:.75},
+    {id:'timeline',label:'Timeline',sub:'4 decades',color:'#f0ece4',w:.7},
+    {id:'dating',label:'Dating',sub:'58 people',color:'#E84787',w:.65,blush:true}
+  ];
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const W=()=>hero.offsetWidth,H=()=>hero.offsetHeight;
+  const base=()=>Math.max(30,Math.min(78,Math.min(W(),H()*1.6)/12));
+  let mx=-9999,my=-9999;
+  const faces=cats.map((c,i)=>{
+    const el=document.createElement('button');el.className='face';
+    el.setAttribute('aria-label',`${c.label}: ${c.sub}`);
+    el.innerHTML=`<svg class="fc" viewBox="-50 -50 100 100" aria-hidden="true">
+      <circle class="body" r="48" fill="${c.color}"/>
+      ${c.blush?'<circle cx="-27" cy="10" r="7" fill="#fff" opacity=".35"/><circle cx="27" cy="10" r="7" fill="#fff" opacity=".35"/>':''}
+      <g class="eyes"><circle cx="-15" cy="-12" r="6" fill="#080807"/><circle cx="15" cy="-12" r="6" fill="#080807"/></g>
+      <path class="mouth" d="M-22 10 Q0 30 22 10" fill="none" stroke="#080807" stroke-width="6" stroke-linecap="round"/>
+    </svg><div class="fl">${c.label}<span>${c.sub}</span></div>`;
+    const btn=[...document.querySelectorAll('nav button')].find(b=>b.getAttribute('onclick').includes(`'${c.id}'`));
+    el.addEventListener('click',()=>{show(c.id,btn);document.querySelector('nav').scrollIntoView({behavior:'smooth'});});
+    el.addEventListener('mouseenter',()=>{f.hover=true;el.querySelector('.mouth').setAttribute('d','M-24 6 Q0 38 24 6 Z');el.querySelector('.mouth').setAttribute('fill','#080807');});
+    el.addEventListener('mouseleave',()=>{f.hover=false;el.querySelector('.mouth').setAttribute('d','M-22 10 Q0 30 22 10');el.querySelector('.mouth').setAttribute('fill','none');});
+    if(!reduce)el.classList.add('pre');
+    box.appendChild(el);
+    const ang=Math.random()*6.283;
+    const f={el,c,eyes:el.querySelector('.eyes'),x:0,y:0,vx:Math.cos(ang)*.45,vy:Math.sin(ang)*.45,r:0,hover:false,ph:Math.random()*6.283};
+    return f;
   });
-
-  // Build particles
-  const particles=[];
-  D.highLevel.forEach(cat=>{
-    for(let i=0;i<cat.count;i++){
-      particles.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        vx:(Math.random()-.5)*.5,
-        vy:(Math.random()-.5)*.5,
-        label:cat.label,
-        color:cat.color,
-        r:2
-      });
-    }
+  function size(){
+    const b=base();
+    faces.forEach(f=>{f.r=b*f.c.w;f.el.style.width=f.el.style.height=(f.r*2)+'px';f.lw=f.el.querySelector('.fl').offsetWidth;});
+  }
+  size();
+  // spread out on a loose grid so they start apart
+  const cols=4,rows=2;
+  faces.forEach((f,i)=>{
+    f.x=(W()/cols)*((i%cols)+.5)+(Math.random()-.5)*40;
+    f.y=(H()/(rows+.4))*(Math.floor(i/cols)+.7)+(Math.random()-.5)*30;
   });
+  window.addEventListener('resize',size);
+  hero.addEventListener('mousemove',e=>{const r=hero.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});
+  hero.addEventListener('mouseleave',()=>{mx=-9999;my=-9999;});
 
-  let mx=-9999,my=-9999,animating=true;
 
-  canvas.addEventListener('mousemove',e=>{
-    const rect=canvas.getBoundingClientRect();
-    const sx=canvas.width/rect.width,sy=canvas.height/rect.height;
-    mx=(e.clientX-rect.left)*sx;
-    my=(e.clientY-rect.top)*sy;
-    // tooltip: find nearest dot
-    let best=null,bestD=20;
-    for(let i=0;i<particles.length;i++){
-      const p=particles[i];
-      const d=Math.hypot(p.x-mx,p.y-my);
-      if(d<bestD){bestD=d;best=p;}
-    }
-    if(best){const cat=D.highLevel.find(c=>c.label===best.label);tip(e,`${best.label} · ${cat.count}`);}
-    else untip();
-  });
-  canvas.addEventListener('mouseleave',()=>{mx=-9999;my=-9999;untip();});
-
-  function frame(){
-    if(!animating)return;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(let i=0;i<particles.length;i++){
-      const p=particles[i];
-      const dx=p.x-mx,dy=p.y-my,dist=Math.hypot(dx,dy);
-      if(dist<110&&dist>0){
-        const f=(110-dist)/110*.7;
-        p.vx+=dx/dist*f;p.vy+=dy/dist*f;
-      }
-      p.vx*=.97;p.vy*=.97;
-      const spd=Math.hypot(p.vx,p.vy);
-      if(spd>1.8){p.vx=p.vx/spd*1.8;p.vy=p.vy/spd*1.8;}
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<-3)p.x=canvas.width+3; else if(p.x>canvas.width+3)p.x=-3;
-      if(p.y<-3)p.y=canvas.height+3; else if(p.y>canvas.height+3)p.y=-3;
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);
-      ctx.fillStyle=p.color;ctx.globalAlpha=.72;ctx.fill();
+  // ---- Intro: all 1,731 connections as dots, which swarm into the faces ----
+  const cv=$('pcanvas'),ctx=cv.getContext('2d');
+  let intro=!reduce,t0=null,popped=false;
+  const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const area=faces.map(f=>f.c.w*f.c.w),tot=area.reduce((a,b)=>a+b,0);
+  const dots=[];
+  if(intro){
+    D.highLevel.forEach(cat=>{for(let i=0;i<cat.count;i++){
+      let r=Math.random()*tot,fi=0;while(r>area[fi]){r-=area[fi];fi++;}
+      const a=Math.random()*6.283,rr=Math.sqrt(Math.random())*.92;
+      dots.push({x:Math.random()*W(),y:Math.random()*H(),vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+        c0:hex(cat.color),c1:hex(faces[fi].c.color),fi,ox:Math.cos(a)*rr,oy:Math.sin(a)*rr,delay:Math.random()*500});
+    }});
+  }
+  const ease=x=>x<0?0:x>1?1:x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+  function drawIntro(){
+    const now=performance.now();if(t0===null)t0=now;const t=now-t0;
+    const dpr=window.devicePixelRatio||1,w=W(),h=H();
+    if(cv.width!==Math.round(w*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+    const DRIFT=1600,GATHER=1500,FADE=600;
+    const fade=1-Math.min(1,Math.max(0,(t-DRIFT-GATHER+200)/FADE));
+    for(const d of dots){
+      d.x+=d.vx;d.y+=d.vy;
+      if(d.x<0)d.x+=w;else if(d.x>w)d.x-=w;
+      if(d.y<0)d.y+=h;else if(d.y>h)d.y-=h;
+      const p=ease((t-DRIFT-d.delay)/GATHER),f=faces[d.fi];
+      const x=d.x+(f.x+d.ox*f.r-d.x)*p,y=d.y+(f.y+d.oy*f.r-d.y)*p;
+      const c=d.c0.map((v,i)=>Math.round(v+(d.c1[i]-v)*p));
+      ctx.globalAlpha=.75*fade;ctx.fillStyle=`rgb(${c})`;
+      ctx.beginPath();ctx.arc(x,y,2,0,6.283);ctx.fill();
     }
     ctx.globalAlpha=1;
+    if(!popped&&t>DRIFT+GATHER+100){
+      popped=true;
+      faces.forEach((f,i)=>setTimeout(()=>{f.el.classList.add('pop');f.el.classList.remove('pre');
+        setTimeout(()=>f.el.classList.remove('pop'),750);},i*70));
+    }
+    if(fade<=0){intro=false;cv.remove();}
+  }
+  let animating=true,t=0;
+  function frame(){
+    if(!animating)return;
+    t+=1;
+    const w=W(),h=H()-(W()<600?80:64);
+    for(const f of faces){
+      if(!f.hover&&!reduce&&!intro){
+        // gentle wander
+        f.vx+=Math.cos(t*.004+f.ph)*.006;f.vy+=Math.sin(t*.005+f.ph*1.3)*.006;
+        const sp=Math.hypot(f.vx,f.vy),tgt=.45;
+        f.vx*=1+(tgt-sp)*.02;f.vy*=1+(tgt-sp)*.02;
+        f.x+=f.vx;f.y+=f.vy;
+      }
+      // walls (leave room for label)
+      const lx=Math.max(f.r,(f.lw||0)/2+6);
+      if(f.x<lx){f.x=lx;f.vx=Math.abs(f.vx);} else if(f.x>w-lx){f.x=w-lx;f.vx=-Math.abs(f.vx);}
+      if(f.y<f.r){f.y=f.r;f.vy=Math.abs(f.vy);} else if(f.y>h-f.r){f.y=h-f.r;f.vy=-Math.abs(f.vy);}
+    }
+    // soft collisions
+    for(let i=0;i<faces.length;i++)for(let j=i+1;j<faces.length;j++){
+      const a=faces[i],b=faces[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+      const hx=k=>Math.max(k.r,(k.lw||0)/2)+10,vy=k=>k.r+22;
+      const min=Math.abs(dx)/d*(hx(a)+hx(b))+Math.abs(dy)/d*(vy(a)+vy(b));
+      if(d<min){const p=(min-d)/d*.05,px=dx*p,py=dy*p;
+        if(!a.hover){a.x-=px;a.y-=py;a.vx-=px*.3;a.vy-=py*.3;}
+        if(!b.hover){b.x+=px;b.y+=py;b.vx+=px*.3;b.vy+=py*.3;}}
+    }
+    for(const f of faces){
+      f.el.style.transform=`translate(${f.x-f.r}px,${f.y-f.r}px)`;
+      // eyes follow the cursor
+      let ex=0,ey=0;
+      if(mx>-9000){const dx=mx-f.x,dy=my-f.y,d=Math.hypot(dx,dy)||1;ex=dx/d*4;ey=dy/d*4;}
+      f.eyes.setAttribute('transform',`translate(${ex.toFixed(2)} ${ey.toFixed(2)})`);
+    }
+    if(intro)drawIntro();
     requestAnimationFrame(frame);
   }
   frame();
-
-  // Pause when scrolled out of view
   new IntersectionObserver(entries=>{
-    animating=entries[0].isIntersecting;
-    if(animating)frame();
+    const was=animating;animating=entries[0].isIntersecting;
+    if(animating&&!was)frame();
   },{threshold:0}).observe(hero);
 }
 
