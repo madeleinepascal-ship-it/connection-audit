@@ -64,15 +64,6 @@ nav button.active{color:var(–fg);background:var(–line);border-bottom:2px sol
 .plat-card .pe{font-size:.52rem;color:var(–dim);margin-top:6px;letter-spacing:.06em}
 .plat-card .ptype{position:absolute;top:12px;right:14px;font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:2px}
 
-/* tumblr breakdown */
-.tumblr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(–line);margin-top:2px}
-.tb-card{background:#080807;background:var(–bg);padding:24px;transition:background .15s}
-.tb-card:hover{background:#0e0d0b}
-.tb-num{font-family:'Inter',sans-serif;font-size:1.8rem;color:#E87D47;line-height:1}
-.tb-name{font-size:.62rem;color:var(–fg);margin-top:5px}
-.tb-note{font-size:.54rem;color:var(–muted);margin-top:4px;line-height:1.6}
-.tb-era{font-size:.5rem;color:var(–dim);margin-top:5px;letter-spacing:.06em}
-
 /* reach timeline */
 .reach-wrap{display:grid;grid-template-columns:1fr 280px;gap:50px;align-items:start;margin-top:36px}
 .reach-bars{display:flex;flex-direction:column;gap:8px}
@@ -245,16 +236,11 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);margin-bottom:50px">
+  <div style="display:grid;grid-template-columns:1fr;gap:2px;background:var(--line);margin-bottom:50px">
     <div style="background:#080807;padding:28px;border-top:3px solid var(--reciprocal)">
       <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People I'm connected with</div>
       <div style="font-family:'Inter',sans-serif;font-size:2rem;color:var(--reciprocal);line-height:1">2,396</div>
       <div style="font-size:.82rem;color:#c0bcb4;margin-top:10px;line-height:1.9">Social media connections — Facebook, LinkedIn, Instagram, phone contacts. The we-probably-know-each-other space.</div>
-    </div>
-    <div style="background:#080807;padding:28px;border-top:3px solid var(--audience)">
-      <div style="font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">People who look at my stuff</div>
-      <div style="font-family:'Inter',sans-serif;font-size:2rem;color:var(--audience);line-height:1">~6,528</div>
-      <div style="font-size:.82rem;color:#c0bcb4;margin-top:10px;line-height:1.9">Curation platform followers — Tumblr, Spotify, Flickr.</div>
     </div>
   </div>
 
@@ -271,20 +257,10 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
 
   <div>
     <div>
-      <div class="sec">Platform reach — followers / connections</div>
+      <div class="sec">Platform connections — people I'm connected with</div>
       <div class="reach-bars" id="reach-bars"></div>
     </div>
 
-  </div>
-
-  <!-- tumblr breakdown -->
-
-  <div style="margin-top:50px">
-    <div class="sec">Tumblr · 5 blogs · 6,287 total followers</div>
-    <div class="tumblr-grid" id="tumblr-grid"></div>
-    <div style="margin-top:28px;font-size:.9rem;color:#c0bcb4;line-height:2.1;max-width:700px">
-      Tumblr was a curation community before Pinterest, a cool kid posting 'aesthetics' spot before Instagram (and before aesthetics had been mangled as a word), and a testing-ground for 'single-serving' schtick ideas before schticks ablazed social media. Used it as a place to try new things, meet new people, and show off the aesthetics, natch.
-    </div>
   </div>
 
   <!-- all platforms grid -->
@@ -454,7 +430,7 @@ nav button.active{color:#080807!important;background:#E84787!important;border-bo
 
 <footer>
   <span>Connection Audit · Madeleine Di Gangi · March 2026</span>
-  <span>~8,300 total reach · 2,396 named · 27 nationalities · 14 cities</span>
+  <span>2,396 named · 27 nationalities · 14 cities</span>
 </footer>
 
 <script>
@@ -469,28 +445,15 @@ const D={
     {id:"online",label:"Online",count:31,color:"#C547E8"}
   ],
   platforms:[
-    {name:"Tumblr (all blogs)",count:6287,type:"audience",color:"#E87D47",era:"2008–present",note:"5 blogs · mostly strangers who found something you made",active:true},
     {name:"Facebook",count:1625,type:"reciprocal",color:"#47C5E8",era:"2006–present",note:"Mutual friends — most intentional layer",active:true},
     {name:"Instagram",count:1636,type:"reciprocal",color:"#8CE847",era:"2012–present",note:"People you follow — a curated list, not inbound audience",active:true},
     {name:"LinkedIn",count:1427,type:"reciprocal",color:"#47C5E8",era:"2006–present",note:"Professional — mutual recognition implied",active:true},
-    {name:"Spotify",count:169,type:"audience",color:"#E87D47",era:"2010–present",note:"Music followers",active:true},
-    {name:"Flickr",count:72,type:"audience",color:"#E87D47",era:"2006–2014",note:"Photo sharing",active:false},
-  ],
-  tumblrBlogs:[
-    {name:"puddling",url:"https://puddling.tumblr.com",followers:2794,note:"Photography of buildings reflected in puddles. Aesthetic single-serving blog that resonated in that particular early 2010s way.",era:"~2010–2016"},
-    {name:"madeleinepascal",url:"https://madeleinepascal.tumblr.com",followers:1656,note:"Curation blog when curation blogs were all the rage. Used to professionally gather inspiration, had a few viral posts before that was a thing. Met good people this way — even went to a Tumblr meetup at Cherry Tavern.",era:"~2008–2017"},
-    {name:"iphuckups",url:"https://iphuckups.tumblr.com",followers:1237,note:"iPhone autocorrect fails before Damn You Autocorrect came and stole the thunder. Got good traction, documenting connection back when.",era:"~2012–2016"},
-    {name:"Notes from Meetings",url:"https://fakevertising.tumblr.com",followers:447,note:"Early buzz on BuzzFeed, then naturally went to Tumblr. Have been drawing and posting elsewhere for years — this is a snapshot in time.",era:"2014–present"},
-    {name:"Harry Dean Stanton Daily",url:"https://harrydeanstanton.tumblr.com",followers:153,note:"Pictures of a favourite actor is a very niche community — but a community nonetheless.",era:"~2013–2016"}
   ],
   reachPlatforms:[
-    {label:"Tumblr (5 blogs)",count:6287,color:"#E87D47"},
     {label:"Instagram",count:1636,color:"#8CE847"},
     {label:"Facebook",count:1625,color:"#47C5E8"},
     {label:"LinkedIn",count:1427,color:"#47C5E8"},
     {label:"Phone contacts",count:1231,color:"#47E8B4"},
-    {label:"Spotify",count:169,color:"#1DB954"},
-    {label:"Flickr",count:72,color:"#FF0084"},
   ],
   cities:[
     {city:"New York City",count:846,note:"Home base 2008–2022\nStuff lives there, sometimes I do too 2022–present"},
@@ -640,7 +603,7 @@ function initBubbles(){
 
 function initPlatforms(){
   // reach bars
-  const rb=$('reach-bars'),mx=D.reachPlatforms[0].count;
+  const rb=$('reach-bars'),mx=Math.max(...D.reachPlatforms.map(d=>d.count));
   D.reachPlatforms.forEach((d,i)=>{
     const row=document.createElement('div');row.className='reach-row';
     row.style.animationDelay = i*.05+'s';
@@ -648,14 +611,6 @@ function initPlatforms(){
     rb.appendChild(row);
   });
   setTimeout(()=>{rb.querySelectorAll('.reach-fill').forEach(b=>{b.style.width=b.dataset.w+'%'})},200);
-
-  // tumblr blogs
-  const tg=$('tumblr-grid');
-  D.tumblrBlogs.forEach(b=>{
-    const card=document.createElement('div');card.className='tb-card';
-    card.innerHTML=`<div class="tb-num">${b.followers.toLocaleString()}</div><div class="tb-name"><a href="${b.url}" target="_blank" rel="noopener" style="color:var(--fg);text-decoration:none;border-bottom:1px solid var(--muted)">${b.name}</a></div><div class="tb-note">${b.note}</div><div class="tb-era">${b.era}</div>`;
-    tg.appendChild(card);
-  });
 
   // all platforms grid
   const pg=$('plat-grid');
@@ -794,7 +749,7 @@ function initParticles(){
   const hero=$('particle-hero'),box=$('faces');
   const cats=[
     {id:'work',label:'Work',sub:'724 people',color:'#E8C547',w:1},
-    {id:'platforms',label:'All Platforms',sub:'~8,300 reach',color:'#C547E8',w:.95},
+    {id:'platforms',label:'All Platforms',sub:'4 platforms',color:'#C547E8',w:.95},
     {id:'cities',label:'Cities',sub:'14 cities',color:'#8CE847',w:.85},
     {id:'nationality',label:'Nationality',sub:'27 nationalities',color:'#47E8B4',w:.85},
     {id:'occasions',label:'How We Met',sub:'15 ways',color:'#E87D47',w:.8},
